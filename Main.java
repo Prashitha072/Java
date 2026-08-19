@@ -1,83 +1,80 @@
 import java.util.Scanner;
 
-interface Calculator
-{
-    void add(int a, int b);
-    void sub(int a, int b);
-    void mul(int a, int b);
-    void div(int a, int b);
-}
-
-class Arithmetic implements Calculator
-{
-    public void add(int a, int b)
-    {
-        System.out.println("Result = " + (a + b));
-    }
-
-    public void sub(int a, int b)
-    {
-        System.out.println("Result = " + (a - b));
-    }
-
-    public void mul(int a, int b)
-    {
-        System.out.println("Result = " + (a * b));
-    }
-
-    public void div(int a, int b)
-    {
-        if (b != 0)
-            System.out.println("Result = " + (a / b));
-        else
-            System.out.println("Division by zero is not possible");
+class InsufficientBalanceException extends Exception {
+    public InsufficientBalanceException(String message) {
+        super(message);
     }
 }
 
-public class Main
-{
-    public static void main(String[] args)
-    {
+class BankAccount {
+    String name;
+    int accountNumber;
+    double balance;
+
+    BankAccount(String name, int accountNumber, double balance) {
+        this.name = name;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+    }
+
+    void deposit(double amount) {
+        balance += amount;
+        System.out.println("Amount Deposited Successfully");
+        System.out.println("Available Balance: Rs. " + balance);
+    }
+
+    void withdraw(double amount) throws InsufficientBalanceException {
+        if (amount > balance) {
+            throw new InsufficientBalanceException("Insufficient Balance");
+        }
+
+        balance -= amount;
+        System.out.println("Amount Withdrawn Successfully");
+        System.out.println("Available Balance: Rs. " + balance);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Arithmetic obj = new Arithmetic();
 
-        System.out.print("Enter First Number: ");
-        int a = sc.nextInt();
+        System.out.print("Account Holder Name: ");
+        String name = sc.nextLine();
 
-        System.out.print("Enter Second Number: ");
-        int b = sc.nextInt();
-                                          
-        System.out.println("\n1. Addition");
-        System.out.println("2. Subtraction");
-        System.out.println("3. Multiplication");
-        System.out.println("4. Division");
+        System.out.print("Account Number: ");
+        int accountNumber = sc.nextInt();
 
-        System.out.print("Enter your choice: ");
-        int ch = sc.nextInt();
+        System.out.print("Initial Balance: ");
+        double balance = sc.nextDouble();
 
-        switch(ch)
-        {
-            case 1:
-                obj.add(a, b);
-                break;
+        BankAccount account = new BankAccount(name, accountNumber, balance);
 
-            case 2:
-                obj.sub(a, b);
-                break;
+        System.out.print("Operation (Deposit/Withdraw): ");
+        String operation = sc.next();
 
-            case 3:
-                obj.mul(a, b);
-                break;
-
-            case 4:
-                obj.div(a, b);
-                break;
-
-            default:
-                System.out.println("Invalid Choice");
+        try {
+            if (operation.equalsIgnoreCase("Deposit")) {
+                System.out.print("Deposit Amount: ");
+                double amount = sc.nextDouble();
+                account.deposit(amount);
+            } 
+            else if (operation.equalsIgnoreCase("Withdraw")) {
+                System.out.print("Withdraw Amount: ");
+                double amount = sc.nextDouble();
+                account.withdraw(amount);
+            } 
+            else {
+                System.out.println("Invalid Operation");
+            }
+        } 
+        catch (InsufficientBalanceException e) {
+            System.out.println("Exception: " + e.getMessage());
+            System.out.println("Transaction Failed");
+            System.out.println("Available Balance: Rs. " + account.balance);
         }
 
         sc.close();
     }
 }
-  
+
+
